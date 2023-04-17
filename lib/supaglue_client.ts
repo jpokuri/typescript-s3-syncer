@@ -4,17 +4,18 @@ import querystring from "querystring";
 export async function getSupagluePage(
   objectListName: string,
   customerId: string,
-  startingUpdatedAt: Date,
+  providerName: string,
+  startingLastModifiedAt: Date,
   cursor?: string
 ): Promise<AxiosResponse<any, any>> {
-  const { API_HOST, API_KEY, PROVIDER_NAME, PAGE_SIZE } = process.env;
+  const { API_HOST, API_KEY, PROVIDER_NAME, PAGE_SIZE = 1000 } = process.env;
 
   const config = {
     method: "get",
     maxBodyLength: Infinity,
     url: `${API_HOST}/crm/v1/${objectListName}?${querystring.stringify({
       page_size: PAGE_SIZE,
-      updated_after: startingUpdatedAt.toISOString(),
+      modified_after: startingLastModifiedAt.toISOString(),
       ...{
         ...(cursor && {
           cursor,
@@ -23,7 +24,7 @@ export async function getSupagluePage(
     })}`,
     headers: {
       "x-customer-id": customerId,
-      "x-provider-name": PROVIDER_NAME,
+      "x-provider-name": providerName,
       "x-api-key": API_KEY,
     },
   };
